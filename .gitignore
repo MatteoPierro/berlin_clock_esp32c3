@@ -1,4 +1,5 @@
 /.vscode
 /.embuild
-/target
+/**/target
 /Cargo.lock
+.embuild

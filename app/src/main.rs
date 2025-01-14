@@ -1,5 +1,6 @@
 use std::time::SystemTime;
 use chrono::{Local, Timelike};
+use berlin_clock::add;
 
 fn main() {
     // It is necessary to call this function once. Otherwise some patches to the runtime
@@ -11,4 +12,5 @@ fn main() {
 
     let now = Local::now();
     log::info!("Hello, {}", now);
+    log::info!("Adding {}", add(2, 3));
 }
