@@ -1,16 +1,37 @@
 use berlin_clock::{berlin_clock, LightState, Time};
 use chrono::{Local, Timelike};
 use esp_idf_svc::hal::delay::FreeRtos;
-use esp_idf_svc::hal::gpio::{Gpio0, InputOutput, Pin, PinDriver};
+use esp_idf_svc::hal::gpio::{Gpio0, Gpio1, Gpio2, Gpio3, Gpio4, InputOutput, Pin, PinDriver};
 use esp_idf_svc::hal::peripherals::Peripherals;
 
 struct CircuitClock<'a> {
-    seconds: PinDriver<'a, Gpio0, InputOutput>
+    seconds: PinDriver<'a, Gpio0, InputOutput>,
+    minutes: MinutesPins<'a>,
 }
 
 impl CircuitClock<'_> {
-    fn display_seconds(&mut self, val :LightState) {
+    fn display_minutes(&mut self, minutes_row: Vec<LightState>) {
+        self.minutes.display(minutes_row)
+    }
+
+    fn display_seconds(&mut self, val: LightState) {
         toggle(&mut self.seconds, val)
+    }
+}
+
+struct MinutesPins<'a> {
+    first: PinDriver<'a, Gpio1, InputOutput>,
+    second: PinDriver<'a, Gpio2, InputOutput>,
+    third: PinDriver<'a, Gpio3, InputOutput>,
+    forth: PinDriver<'a, Gpio4, InputOutput>,
+}
+
+impl MinutesPins<'_> {
+    fn display(&mut self, minutes_row: Vec<LightState>) {
+        toggle(&mut self.first, minutes_row[0]);
+        toggle(&mut self.second, minutes_row[1]);
+        toggle(&mut self.third, minutes_row[2]);
+        toggle(&mut self.forth, minutes_row[3]);
     }
 }
 
@@ -24,8 +45,16 @@ fn main() {
     let mut three = PinDriver::input_output(&mut peripherals.pins.gpio3).unwrap();
     let mut four = PinDriver::input_output(&mut peripherals.pins.gpio4).unwrap();
 
+    let mut minutes = MinutesPins {
+        first: one,
+        second: two,
+        third: three,
+        forth: four,
+    };
+
     let mut circuit_clock = CircuitClock {
-        seconds: zero
+        seconds: zero,
+        minutes,
     };
 
     loop {
@@ -41,10 +70,7 @@ fn main() {
         let clock = berlin_clock(time);
 
         let minutes_row = clock.minutes.clone();
-        toggle(&mut one, minutes_row[0]);
-        toggle(&mut two, minutes_row[1]);
-        toggle(&mut three, minutes_row[2]);
-        toggle(&mut four, minutes_row[3]);
+        circuit_clock.display_minutes(minutes_row);
 
         circuit_clock.display_seconds(clock.seconds);
         FreeRtos::delay_ms(1000);
