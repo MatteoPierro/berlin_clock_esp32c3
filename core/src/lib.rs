@@ -12,6 +12,7 @@ pub struct BerlinClock {
     hours: Vec<LightState>,
     five_minutes: Vec<LightState>,
     pub minutes: Vec<LightState>,
+    pub seconds: LightState,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -36,6 +37,15 @@ pub fn berlin_clock(time: Time) -> BerlinClock {
         hours: hours_row(&time),
         five_minutes: five_minutes_row(&time),
         minutes: minutes_row(&time),
+        seconds: seconds(&time)
+    }
+}
+
+fn seconds(time: &Time) -> LightState {
+    if time.seconds % 2 == 0 {
+        On
+    } else {
+        Off
     }
 }
 
@@ -87,16 +97,18 @@ mod tests {
                 hours: vec![Off, Off, Off, Off],
                 five_minutes: vec![Off, Off, Off, Off, Off, Off, Off, Off, Off, Off, Off],
                 minutes: vec![Off, Off, Off, Off],
+                seconds: On
             }
         );
 
         assert_eq!(
-            berlin_clock(time("07:19:00")),
+            berlin_clock(time("07:19:01")),
             BerlinClock {
                 five_hours: vec![On, Off, Off, Off],
                 hours: vec![On, On, Off, Off],
                 five_minutes: vec![On, On, On, Off, Off, Off, Off, Off, Off, Off, Off],
                 minutes: vec![On, On, On, On],
+                seconds: Off
             }
         )
     }
