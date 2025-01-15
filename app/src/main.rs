@@ -11,18 +11,21 @@ fn main() {
     log::info!("Hello, {}", now);
 
     let peripherals = Peripherals::take().unwrap();
-    let mut _zero = PinDriver::input_output(peripherals.pins.gpio0).unwrap();
+    let mut zero = PinDriver::input_output(peripherals.pins.gpio0).unwrap();
     let mut one = PinDriver::input_output(peripherals.pins.gpio1).unwrap();
     let mut two = PinDriver::input_output(peripherals.pins.gpio2).unwrap();
     let mut three = PinDriver::input_output(peripherals.pins.gpio3).unwrap();
     let mut four = PinDriver::input_output(peripherals.pins.gpio4).unwrap();
 
     let clock = berlin_clock(time("00:08:00"));
-    let val = clock.minutes.clone();
-    toggle(&mut one, val[0]);
-    toggle(&mut two, val[1]);
-    toggle(&mut three, val[2]);
-    toggle(&mut four, val[3]);
+    let minutes_row = clock.minutes.clone();
+    toggle(&mut one, minutes_row[0]);
+    toggle(&mut two, minutes_row[1]);
+    toggle(&mut three, minutes_row[2]);
+    toggle(&mut four, minutes_row[3]);
+
+    let seconds = clock.seconds;
+    toggle(&mut zero, seconds);
 
     loop {
         FreeRtos::delay_ms(1000);
