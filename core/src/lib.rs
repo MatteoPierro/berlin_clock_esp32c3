@@ -10,7 +10,7 @@ pub struct Time {
 pub struct BerlinClock {
     five_hours: Vec<LightState>,
     hours: Vec<LightState>,
-    five_minutes: Vec<LightState>,
+    pub five_minutes: Vec<LightState>,
     pub minutes: Vec<LightState>,
     pub seconds: LightState,
 }
