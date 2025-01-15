@@ -30,6 +30,15 @@ pub fn time(time: &str) -> Time {
     }
 }
 
+pub fn berlin_clock(time: Time) -> BerlinClock {
+    BerlinClock {
+        five_hours: five_hours_row(&time),
+        hours: hours_row(&time),
+        five_minutes: five_minutes_row(&time),
+        minutes: minutes_row(&time),
+    }
+}
+
 fn minutes_row(time: &Time) -> Vec<LightState> {
     let lights_in_minute_row = 4;
     let lights_on = time.minutes % 5;
@@ -62,20 +71,6 @@ fn build_lights_row(lights_in_row: usize, lights_on: usize) -> Vec<LightState> {
     let lights_off = lights_in_row - lights_on;
     [vec![On; lights_on], vec![Off; lights_off]].concat()
 }
-
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
-
-pub fn berlin_clock(time: Time) -> BerlinClock {
-    BerlinClock {
-        five_hours: five_hours_row(&time),
-        hours: hours_row(&time),
-        five_minutes: five_minutes_row(&time),
-        minutes: minutes_row(&time),
-    }
-}
-
 
 #[cfg(test)]
 mod tests {
@@ -169,11 +164,5 @@ mod tests {
         assert_eq!(minutes_row(&time("00:08:00")), vec![On, On, On, Off]);
         assert_eq!(minutes_row(&time("00:14:00")), vec![On, On, On, On]);
         assert_eq!(minutes_row(&time("00:59:00")), vec![On, On, On, On]);
-    }
-
-    #[test]
-    fn exploration() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
     }
 }
