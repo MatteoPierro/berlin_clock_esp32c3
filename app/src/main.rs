@@ -1,14 +1,11 @@
-use berlin_clock::{berlin_clock, time, LightState};
-use chrono::Local;
+use berlin_clock::{berlin_clock, LightState, Time};
+use chrono::{Local, Timelike};
 use esp_idf_svc::hal::delay::FreeRtos;
 use esp_idf_svc::hal::gpio::{InputOutput, Pin, PinDriver};
 use esp_idf_svc::hal::peripherals::Peripherals;
 
 fn main() {
     esp_idf_svc::log::EspLogger::initialize_default();
-
-    let now = Local::now();
-    log::info!("Hello, {}", now);
 
     let peripherals = Peripherals::take().unwrap();
     let mut zero = PinDriver::input_output(peripherals.pins.gpio0).unwrap();
@@ -17,17 +14,25 @@ fn main() {
     let mut three = PinDriver::input_output(peripherals.pins.gpio3).unwrap();
     let mut four = PinDriver::input_output(peripherals.pins.gpio4).unwrap();
 
-    let clock = berlin_clock(time("00:08:00"));
-    let minutes_row = clock.minutes.clone();
-    toggle(&mut one, minutes_row[0]);
-    toggle(&mut two, minutes_row[1]);
-    toggle(&mut three, minutes_row[2]);
-    toggle(&mut four, minutes_row[3]);
-
-    let seconds = clock.seconds;
-    toggle(&mut zero, seconds);
-
     loop {
+        let now = Local::now();
+        let time = Time {
+            hours: now.hour() as usize,
+            minutes: now.minute() as usize,
+            seconds: now.second() as usize,
+        };
+
+        log::info!("time, {}", now);
+
+        let clock = berlin_clock(time);
+        let minutes_row = clock.minutes.clone();
+        toggle(&mut one, minutes_row[0]);
+        toggle(&mut two, minutes_row[1]);
+        toggle(&mut three, minutes_row[2]);
+        toggle(&mut four, minutes_row[3]);
+
+        let seconds = clock.seconds;
+        toggle(&mut zero, seconds);
         FreeRtos::delay_ms(1000);
     }
 }

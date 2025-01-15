@@ -1,9 +1,9 @@
 use crate::LightState::{Off, On};
 
 pub struct Time {
-    hours: usize,
-    minutes: usize,
-    seconds: usize,
+    pub hours: usize,
+    pub minutes: usize,
+    pub seconds: usize,
 }
 
 #[derive(PartialEq, Debug)]
