@@ -1,38 +1,87 @@
+use crate::LightState::{Off, On};
 
-struct Time {
+pub struct Time {
     hours: usize,
     minutes: usize,
     seconds: usize,
 }
 
 #[derive(PartialEq, Debug)]
-struct BerlinClock {
+pub struct BerlinClock {
     five_hours: Vec<LightState>,
     hours: Vec<LightState>,
     five_minutes: Vec<LightState>,
-    minutes: Vec<LightState>,
+    pub minutes: Vec<LightState>,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
-enum LightState {
+pub enum LightState {
     On,
     Off,
 }
 
+pub fn time(time: &str) -> Time {
+    let parts = time.split(":").collect::<Vec<&str>>();
+
+    Time {
+        hours: parts[0].parse::<usize>().unwrap(),
+        minutes: parts[1].parse::<usize>().unwrap(),
+        seconds: parts[2].parse::<usize>().unwrap(),
+    }
+}
+
+fn minutes_row(time: &Time) -> Vec<LightState> {
+    let lights_in_minute_row = 4;
+    let lights_on = time.minutes % 5;
+
+    build_lights_row(lights_in_minute_row, lights_on)
+}
+
+fn five_minutes_row(time: &Time) -> Vec<LightState> {
+    let lights_in_five_minutes_row = 11;
+    let lights_on = time.minutes / 5;
+
+    build_lights_row(lights_in_five_minutes_row, lights_on)
+}
+
+fn hours_row(time: &Time) -> Vec<LightState> {
+    let lights_in_hours_row = 4;
+    let lights_on = time.hours % 5;
+
+    build_lights_row(lights_in_hours_row, lights_on)
+}
+
+fn five_hours_row(time: &Time) -> Vec<LightState> {
+    let lights_in_five_hours_row = 4;
+    let lights_on = time.hours / 5;
+
+    build_lights_row(lights_in_five_hours_row, lights_on)
+}
+
+fn build_lights_row(lights_in_row: usize, lights_on: usize) -> Vec<LightState> {
+    let lights_off = lights_in_row - lights_on;
+    [vec![On; lights_on], vec![Off; lights_off]].concat()
+}
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right
 }
 
+pub fn berlin_clock(time: Time) -> BerlinClock {
+    BerlinClock {
+        five_hours: five_hours_row(&time),
+        hours: hours_row(&time),
+        five_minutes: five_minutes_row(&time),
+        minutes: minutes_row(&time),
+    }
+}
 
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    use crate::LightState::On;
-
-    use LightState::Off;
+    use LightState::{On, Off};
 
     #[test]
     fn it_displays_the_berlin_clock() {
@@ -55,15 +104,6 @@ mod tests {
                 minutes: vec![On, On, On, On],
             }
         )
-    }
-
-    fn berlin_clock(time: Time) -> BerlinClock {
-        BerlinClock {
-            five_hours: five_hours_row(&time),
-            hours: hours_row(&time),
-            five_minutes: five_minutes_row(&time),
-            minutes: minutes_row(&time),
-        }
     }
 
     #[test]
@@ -131,55 +171,9 @@ mod tests {
         assert_eq!(minutes_row(&time("00:59:00")), vec![On, On, On, On]);
     }
 
-    fn time(time: &str) -> Time {
-        let parts = time.split(":").collect::<Vec<&str>>();
-
-        Time {
-            hours: parts[0].parse::<usize>().unwrap(),
-            minutes: parts[1].parse::<usize>().unwrap(),
-            seconds: parts[2].parse::<usize>().unwrap(),
-        }
-    }
-
-    fn minutes_row(time: &Time) -> Vec<LightState> {
-        let lights_in_minute_row = 4;
-        let lights_on = time.minutes % 5;
-
-        build_lights_row(lights_in_minute_row, lights_on)
-    }
-
-    fn five_minutes_row(time: &Time) -> Vec<LightState> {
-        let lights_in_five_minutes_row = 11;
-        let lights_on = time.minutes / 5;
-
-        build_lights_row(lights_in_five_minutes_row, lights_on)
-    }
-
-    fn hours_row(time: &Time) -> Vec<LightState> {
-        let lights_in_hours_row = 4;
-        let lights_on = time.hours % 5;
-
-        build_lights_row(lights_in_hours_row, lights_on)
-    }
-
-    fn five_hours_row(time: &Time) -> Vec<LightState> {
-        let lights_in_five_hours_row = 4;
-        let lights_on = time.hours / 5;
-
-        build_lights_row(lights_in_five_hours_row, lights_on)
-    }
-
-    fn build_lights_row(lights_in_row: usize, lights_on: usize) -> Vec<LightState> {
-        let lights_off = lights_in_row - lights_on;
-        [vec![On; lights_on], vec![Off; lights_off]].concat()
-    }
-
     #[test]
     fn exploration() {
         let result = add(2, 2);
         assert_eq!(result, 4);
     }
-
-
-
 }
