@@ -1,4 +1,4 @@
-use berlin_clock_hardware::fetch_time;
+use berlin_clock_hardware::{current_time, fetch_time};
 use chrono::Local;
 use esp_idf_svc::hal::prelude::Peripherals;
 use esp_idf_svc::log::EspLogger;
@@ -13,7 +13,7 @@ fn main() -> anyhow::Result<()> {
     fetch_time(peripherals.modem)?;
 
     loop {
-        info!("Current time: {:?}", Local::now().with_timezone(&Tz::Europe__Helsinki));
+        info!("Current time: {:?}", current_time());
         sleep(Duration::from_secs(1));
     }
 }

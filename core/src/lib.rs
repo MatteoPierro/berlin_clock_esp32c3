@@ -1,5 +1,6 @@
 use crate::LightState::{Off, On};
 
+#[derive(Debug)]
 pub struct Time {
     pub hours: usize,
     pub minutes: usize,

@@ -6,7 +6,7 @@ use esp_idf_svc::hal::delay::FreeRtos;
 use esp_idf_svc::hal::gpio::PinDriver;
 use esp_idf_svc::hal::peripherals::Peripherals;
 use log::info;
-use berlin_clock_hardware::{fetch_time, MinutesPins, Seconds};
+use berlin_clock_hardware::{current_time, fetch_time, MinutesPins, Seconds};
 
 fn main() -> anyhow::Result<()> {
     esp_idf_svc::log::EspLogger::initialize_default();
@@ -25,16 +25,11 @@ fn main() -> anyhow::Result<()> {
     };
 
     loop {
-        let now = Local::now();
-        let time = Time {
-            hours: now.hour() as usize,
-            minutes: now.minute() as usize,
-            seconds: now.second() as usize,
-        };
+        let now = current_time();
 
-        info!("time, {}", now);
+        info!("time, {:?}", now);
 
-        let clock = berlin_clock(time);
+        let clock = berlin_clock(now);
         seconds.display(clock.seconds);
         minutes.display(clock.minutes.clone());
 

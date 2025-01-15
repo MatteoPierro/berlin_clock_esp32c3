@@ -1,6 +1,8 @@
 use std::ffi::CString;
+use chrono::{Local,Timelike};
+use chrono_tz::Tz;
 use esp_idf_svc::eventloop::EspSystemEventLoop;
-use berlin_clock::LightState;
+use berlin_clock::{LightState, Time};
 use esp_idf_svc::hal::gpio::{Gpio0, Gpio1, Gpio10, Gpio2, Gpio3, Gpio4, Gpio5, Gpio6, Gpio7, Gpio8, Gpio9, InputOutput, Pin, PinDriver};
 use esp_idf_svc::hal::modem::Modem;
 use esp_idf_svc::nvs::EspDefaultNvsPartition;
@@ -122,4 +124,13 @@ fn connect_wifi(wifi: &mut BlockingWifi<EspWifi<'static>>) -> anyhow::Result<()>
     info!("Wifi netif up");
 
     Ok(())
+}
+
+pub fn current_time() -> Time {
+    let now = Local::now().with_timezone(&Tz::Europe__Helsinki);
+    Time {
+        hours: now.hour() as usize,
+        minutes: now.minute() as usize,
+        seconds: now.second() as usize,
+    }
 }
