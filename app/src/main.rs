@@ -1,25 +1,22 @@
+use std::thread::sleep;
+use std::time::Duration;
 use berlin_clock::{berlin_clock, Time};
 use chrono::{Local, Timelike};
 use esp_idf_svc::hal::delay::FreeRtos;
 use esp_idf_svc::hal::gpio::PinDriver;
 use esp_idf_svc::hal::peripherals::Peripherals;
-use berlin_clock_hardware::{ClockPins, MinutesPins};
+use berlin_clock_hardware::{fetch_time, ClockPins, MinutesPins};
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     esp_idf_svc::log::EspLogger::initialize_default();
-    let peripherals = Peripherals::take().unwrap();
+    let peripherals = Peripherals::take()?;
+    fetch_time(peripherals.modem)?;
 
-    let minutes = MinutesPins {
-        first: PinDriver::input_output(peripherals.pins.gpio1).unwrap(),
-        second: PinDriver::input_output(peripherals.pins.gpio2).unwrap(),
-        third: PinDriver::input_output(peripherals.pins.gpio3).unwrap(),
-        forth: PinDriver::input_output(peripherals.pins.gpio4).unwrap(),
-    };
-
-    let mut circuit_pins = ClockPins {
-        // seconds: zero,
-        five_minutes,
-        minutes,
+    let mut minutes = MinutesPins {
+        first: PinDriver::input_output(peripherals.pins.gpio1)?,
+        second: PinDriver::input_output(peripherals.pins.gpio2)?,
+        third: PinDriver::input_output(peripherals.pins.gpio3)?,
+        forth: PinDriver::input_output(peripherals.pins.gpio4)?,
     };
 
     loop {
@@ -35,9 +32,8 @@ fn main() {
         let clock = berlin_clock(time);
 
         let minutes_row = clock.minutes.clone();
-        circuit_pins.display_minutes(minutes_row);
+        minutes.display(minutes_row);
 
-        // circuit_pins.display_seconds(clock.seconds);
-        FreeRtos::delay_ms(1000);
+        sleep(Duration::from_secs(1));
     }
 }

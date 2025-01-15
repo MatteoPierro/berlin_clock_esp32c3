@@ -70,7 +70,7 @@ impl MinutesPins<'_> {
     // fn new() -> Self {
     //
     // }
-    fn display(&mut self, minutes_row: Vec<LightState>) {
+    pub fn display(&mut self, minutes_row: Vec<LightState>) {
         toggle(&mut self.first, minutes_row[0]);
         toggle(&mut self.second, minutes_row[1]);
         toggle(&mut self.third, minutes_row[2]);
