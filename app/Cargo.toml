@@ -27,6 +27,7 @@ berlin_clock = { path = "../core" }
 chrono = "0.4.39"
 log = "0.4"
 esp-idf-svc = { version = "0.50", features = ["critical-section", "embassy-time-driver", "embassy-sync"] }
+anyhow = "1.0.95"
 
 [build-dependencies]
 embuild = "0.33"
