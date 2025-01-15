@@ -1,15 +1,15 @@
+use berlin_clock::{berlin_clock, time};
+use berlin_clock_hardware::CircuitPins;
 use esp_idf_svc::hal::delay::FreeRtos;
-use esp_idf_svc::hal::gpio::PinDriver;
-use esp_idf_svc::hal::peripherals::Peripherals;
 
 fn main() {
     esp_idf_svc::log::EspLogger::initialize_default();
+    let mut circuit_pins = CircuitPins::new();
 
-    let peripherals = Peripherals::take().unwrap();
-    let mut one = PinDriver::input_output(peripherals.pins.gpio1).unwrap();
+    let clock = berlin_clock(time("23:59:59"));
+    circuit_pins.display_minutes(clock.minutes.clone());
 
     loop {
-        one.toggle().unwrap();
         FreeRtos::delay_ms(1000);
     }
 }
