@@ -7,26 +7,6 @@ use esp_idf_svc::sntp;
 use esp_idf_svc::wifi::{AuthMethod, BlockingWifi, ClientConfiguration, Configuration, EspWifi};
 use log::info;
 
-pub struct ClockPins<'a> {
-    // pub seconds: PinDriver<'a, Gpio0, InputOutput>,
-    pub five_minutes: FiveMinutesPins<'a>,
-    pub minutes: MinutesPins<'a>,
-}
-
-impl ClockPins<'_> {
-    pub fn display_five_minutes(&mut self, five_minutes_row: Vec<LightState>) {
-        self.five_minutes.display(five_minutes_row)
-    }
-
-    pub fn display_minutes(&mut self, minutes_row: Vec<LightState>) {
-        self.minutes.display(minutes_row)
-    }
-
-    // pub fn display_seconds(&mut self, val: LightState) {
-    //     toggle(&mut self.seconds, val)
-    // }
-}
-
 pub struct FiveMinutesPins<'a> {
     pub first: PinDriver<'a, Gpio10, InputOutput>,
     pub second: PinDriver<'a, Gpio8, InputOutput>,
