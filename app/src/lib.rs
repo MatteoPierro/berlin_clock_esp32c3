@@ -7,6 +7,16 @@ use esp_idf_svc::sntp;
 use esp_idf_svc::wifi::{AuthMethod, BlockingWifi, ClientConfiguration, Configuration, EspWifi};
 use log::info;
 
+pub struct Seconds<'a> {
+    pub first: PinDriver<'a, Gpio0, InputOutput>,
+}
+
+impl<'a> Seconds<'a> {
+    pub fn display(&mut self, seconds: LightState) {
+        toggle(&mut self.first, seconds)
+    }
+}
+
 pub struct FiveMinutesPins<'a> {
     pub first: PinDriver<'a, Gpio10, InputOutput>,
     pub second: PinDriver<'a, Gpio8, InputOutput>,
@@ -35,7 +45,6 @@ impl FiveMinutesPins<'_> {
         toggle(&mut self.tenth, five_minutes_row[9]);
         toggle(&mut self.eleventh, five_minutes_row[10]);
     }
-
 }
 
 pub struct MinutesPins<'a> {
@@ -46,10 +55,6 @@ pub struct MinutesPins<'a> {
 }
 
 impl MinutesPins<'_> {
-
-    // fn new() -> Self {
-    //
-    // }
     pub fn display(&mut self, minutes_row: Vec<LightState>) {
         toggle(&mut self.first, minutes_row[0]);
         toggle(&mut self.second, minutes_row[1]);
@@ -69,7 +74,7 @@ fn toggle<T: Pin>(one: &mut PinDriver<T, InputOutput>, value: LightState) {
 const SSID: &str = env!("SSID");
 const PASSWORD: &str = env!("PASSWORD");
 
-pub fn fetch_time(modem: Modem) ->  anyhow::Result<()> {
+pub fn fetch_time(modem: Modem) -> anyhow::Result<()> {
     let sys_loop = EspSystemEventLoop::take()?;
     let nvs = EspDefaultNvsPartition::take()?;
 

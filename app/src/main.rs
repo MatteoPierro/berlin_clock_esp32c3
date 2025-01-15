@@ -6,12 +6,16 @@ use esp_idf_svc::hal::delay::FreeRtos;
 use esp_idf_svc::hal::gpio::PinDriver;
 use esp_idf_svc::hal::peripherals::Peripherals;
 use log::info;
-use berlin_clock_hardware::{fetch_time, MinutesPins};
+use berlin_clock_hardware::{fetch_time, MinutesPins, Seconds};
 
 fn main() -> anyhow::Result<()> {
     esp_idf_svc::log::EspLogger::initialize_default();
     let peripherals = Peripherals::take()?;
     fetch_time(peripherals.modem)?;
+
+    let mut seconds = Seconds {
+        first: PinDriver::input_output(peripherals.pins.gpio0)?
+    };
 
     let mut minutes = MinutesPins {
         first: PinDriver::input_output(peripherals.pins.gpio1)?,
@@ -31,6 +35,7 @@ fn main() -> anyhow::Result<()> {
         info!("time, {}", now);
 
         let clock = berlin_clock(time);
+        seconds.display(clock.seconds);
         minutes.display(clock.minutes.clone());
 
         sleep(Duration::from_secs(1));
