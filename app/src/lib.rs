@@ -1,3 +1,4 @@
+use std::ffi::CString;
 use esp_idf_svc::eventloop::EspSystemEventLoop;
 use berlin_clock::LightState;
 use esp_idf_svc::hal::gpio::{Gpio0, Gpio1, Gpio10, Gpio2, Gpio3, Gpio4, Gpio5, Gpio6, Gpio7, Gpio8, Gpio9, InputOutput, Pin, PinDriver};
@@ -75,6 +76,14 @@ const SSID: &str = env!("SSID");
 const PASSWORD: &str = env!("PASSWORD");
 
 pub fn fetch_time(modem: Modem) -> anyhow::Result<()> {
+    unsafe {
+        let key = CString::new("TZ")?;
+        let value = CString::new("EET")?;
+        esp_idf_svc::sys::setenv(key.as_ptr() as *const u8, value.as_ptr() as *const u8, 1);
+        esp_idf_svc::sys::tzset();
+        // let x = esp_idf_svc::sys::getenv(key.as_ptr() as *const u8);
+        // info!("something {:?}", CString::from_raw(x))
+    }
     let sys_loop = EspSystemEventLoop::take()?;
     let nvs = EspDefaultNvsPartition::take()?;
 

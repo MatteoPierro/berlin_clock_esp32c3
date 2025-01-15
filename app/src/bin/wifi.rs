@@ -5,6 +5,7 @@ use esp_idf_svc::log::EspLogger;
 use log::info;
 use std::thread::sleep;
 use std::time::Duration;
+use chrono_tz::Tz;
 
 fn main() -> anyhow::Result<()> {
     EspLogger::initialize_default();
@@ -12,7 +13,7 @@ fn main() -> anyhow::Result<()> {
     fetch_time(peripherals.modem)?;
 
     loop {
-        info!("Current time: {:?}", Local::now());
+        info!("Current time: {:?}", Local::now().with_timezone(&Tz::Europe__Helsinki));
         sleep(Duration::from_secs(1));
     }
 }
