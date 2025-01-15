@@ -35,17 +35,25 @@ impl MinutesPins<'_> {
     }
 }
 
+fn toggle<T: Pin>(one: &mut PinDriver<T, InputOutput>, value: LightState) {
+    if value == LightState::On {
+        one.set_high().unwrap();
+    } else {
+        one.set_low().unwrap();
+    }
+}
+
 fn main() {
     esp_idf_svc::log::EspLogger::initialize_default();
 
-    let mut peripherals = Peripherals::take().unwrap();
-    let mut zero = PinDriver::input_output(&mut peripherals.pins.gpio0).unwrap();
-    let mut one = PinDriver::input_output(&mut peripherals.pins.gpio1).unwrap();
-    let mut two = PinDriver::input_output(&mut peripherals.pins.gpio2).unwrap();
-    let mut three = PinDriver::input_output(&mut peripherals.pins.gpio3).unwrap();
-    let mut four = PinDriver::input_output(&mut peripherals.pins.gpio4).unwrap();
+    let peripherals = Peripherals::take().unwrap();
+    let zero = PinDriver::input_output(peripherals.pins.gpio0).unwrap();
+    let one = PinDriver::input_output(peripherals.pins.gpio1).unwrap();
+    let two = PinDriver::input_output(peripherals.pins.gpio2).unwrap();
+    let three = PinDriver::input_output(peripherals.pins.gpio3).unwrap();
+    let four = PinDriver::input_output(peripherals.pins.gpio4).unwrap();
 
-    let mut minutes = MinutesPins {
+    let minutes = MinutesPins {
         first: one,
         second: two,
         third: three,
@@ -74,13 +82,5 @@ fn main() {
 
         circuit_clock.display_seconds(clock.seconds);
         FreeRtos::delay_ms(1000);
-    }
-}
-
-fn toggle<T: Pin>(one: &mut PinDriver<T, InputOutput>, value: LightState) {
-    if value == LightState::On {
-        one.set_high().unwrap();
-    } else {
-        one.set_low().unwrap();
     }
 }
