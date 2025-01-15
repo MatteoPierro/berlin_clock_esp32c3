@@ -4,21 +4,30 @@ use esp_idf_svc::hal::prelude::Peripherals;
 use esp_idf_svc::log::EspLogger;
 use esp_idf_svc::wifi::{AuthMethod, BlockingWifi, ClientConfiguration, Configuration, EspWifi};
 use esp_idf_svc::{eventloop::EspSystemEventLoop, nvs::EspDefaultNvsPartition, sntp};
+use esp_idf_svc::hal::modem::Modem;
 use log::info;
 
 const SSID: &str = env!("SSID");
 const PASSWORD: &str = env!("PASSWORD");
 
 fn main() -> anyhow::Result<()> {
-    esp_idf_svc::sys::link_patches();
     EspLogger::initialize_default();
-
     let peripherals = Peripherals::take()?;
+    fetch_time(peripherals.modem)?;
+
+    loop {
+        // To get a better formatting of the time, you can use the `chrono` or `time` Rust crates
+        info!("Current time: {:?}", Local::now());
+        std::thread::sleep(std::time::Duration::from_secs(1));
+    }
+}
+
+fn fetch_time(modem: Modem) ->  anyhow::Result<()> {
     let sys_loop = EspSystemEventLoop::take()?;
     let nvs = EspDefaultNvsPartition::take()?;
 
     let mut wifi = BlockingWifi::wrap(
-        EspWifi::new(peripherals.modem, sys_loop.clone(), Some(nvs)).unwrap(),
+        EspWifi::new(modem, sys_loop.clone(), Some(nvs)).unwrap(),
         sys_loop,
     )?;
 
@@ -27,12 +36,7 @@ fn main() -> anyhow::Result<()> {
     // Keep it around or else the SNTP service will stop
     let _sntp = sntp::EspSntp::new_default()?;
     info!("SNTP initialized");
-
-    loop {
-        // To get a better formatting of the time, you can use the `chrono` or `time` Rust crates
-        info!("Current time: {:?}", Local::now());
-        std::thread::sleep(std::time::Duration::from_secs(1));
-    }
+    Ok(())
 }
 
 fn connect_wifi(wifi: &mut BlockingWifi<EspWifi<'static>>) -> anyhow::Result<()> {

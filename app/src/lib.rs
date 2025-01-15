@@ -1,6 +1,5 @@
-use esp_idf_svc::hal::gpio::{Gpio0, Gpio1, Gpio10, Gpio18, Gpio19, Gpio2, Gpio20, Gpio21, Gpio3, Gpio4, Gpio5, Gpio6, Gpio7, Gpio8, Gpio9, InputOutput, Pin, PinDriver};
-use esp_idf_svc::hal::peripherals::Peripherals;
 use berlin_clock::LightState;
+use esp_idf_svc::hal::gpio::{Gpio0, Gpio1, Gpio10, Gpio2, Gpio3, Gpio4, Gpio5, Gpio6, Gpio7, Gpio8, Gpio9, InputOutput, Pin, PinDriver};
 
 pub struct ClockPins<'a> {
     // pub seconds: PinDriver<'a, Gpio0, InputOutput>,
