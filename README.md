@@ -28,3 +28,5 @@ cargo install espup
 espup install
 cargo install ldproxy
 ```
+
+NOTE: do not use the GPIO from USB, otherwise it gets into a strange state from which it is hard to reset.
