@@ -3,7 +3,7 @@
 ## How to run
 
 ```shell
-cd app && cargo run
+cd app && SSID=<wifi_ssid> PASSWORD=<wifi_password> cargo run --bin <binary>
 ```
 
 ## How to flush
@@ -16,4 +16,15 @@ espflash flash target/riscv32imc-esp-espidf/debug/berlin-clock-hardware
 
 ```shell
 espflash monitor 
+```
+
+## Dev setup
+
+Follow the guide [here](https://docs.esp-rs.org/book/) for std applications
+
+```bash
+rustup toolchain install nightly --component rust-src
+cargo install espup
+espup install
+cargo install ldproxy
 ```
