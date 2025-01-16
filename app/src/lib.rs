@@ -1,15 +1,14 @@
-use std::ffi::CString;
-use chrono::{Local,Timelike};
+use berlin_clock::{LightState, Time};
+use chrono::{Local, Timelike};
 use chrono_tz::Tz;
 use esp_idf_svc::eventloop::EspSystemEventLoop;
-use berlin_clock::{LightState, Time};
 use esp_idf_svc::hal::gpio::{Gpio0, Gpio1, Gpio10, Gpio2, Gpio3, Gpio4, Gpio5, Gpio6, Gpio7, Gpio8, Gpio9, InputOutput, Pin, PinDriver};
 use esp_idf_svc::hal::modem::Modem;
 use esp_idf_svc::nvs::EspDefaultNvsPartition;
 use esp_idf_svc::sntp;
+use esp_idf_svc::sntp::EspSntp;
 use esp_idf_svc::wifi::{AuthMethod, BlockingWifi, ClientConfiguration, Configuration, EspWifi};
 use log::info;
-
 pub struct Seconds<'a> {
     pub first: PinDriver<'a, Gpio0, InputOutput>,
 }
@@ -77,15 +76,7 @@ fn toggle<T: Pin>(one: &mut PinDriver<T, InputOutput>, value: LightState) {
 const SSID: &str = env!("SSID");
 const PASSWORD: &str = env!("PASSWORD");
 
-pub fn fetch_time(modem: Modem) -> anyhow::Result<()> {
-    unsafe {
-        let key = CString::new("TZ")?;
-        let value = CString::new("EET")?;
-        esp_idf_svc::sys::setenv(key.as_ptr() as *const u8, value.as_ptr() as *const u8, 1);
-        esp_idf_svc::sys::tzset();
-        // let x = esp_idf_svc::sys::getenv(key.as_ptr() as *const u8);
-        // info!("something {:?}", CString::from_raw(x))
-    }
+pub fn fetch_time(modem: Modem) -> anyhow::Result<(BlockingWifi<EspWifi<'static>>, EspSntp<'static>)> {
     let sys_loop = EspSystemEventLoop::take()?;
     let nvs = EspDefaultNvsPartition::take()?;
 
@@ -97,12 +88,12 @@ pub fn fetch_time(modem: Modem) -> anyhow::Result<()> {
     connect_wifi(&mut wifi)?;
 
     // Keep it around or else the SNTP service will stop
-    let _sntp = sntp::EspSntp::new_default()?;
+    let sntp = sntp::EspSntp::new_default()?;
     info!("SNTP initialized");
-    Ok(())
+    Ok((wifi, sntp))
 }
 
-fn connect_wifi(wifi: &mut BlockingWifi<EspWifi<'static>>) -> anyhow::Result<()> {
+pub fn connect_wifi(wifi: &mut BlockingWifi<EspWifi<'static>>) -> anyhow::Result<()> {
     let wifi_configuration: Configuration = Configuration::Client(ClientConfiguration {
         ssid: SSID.try_into().unwrap(),
         bssid: None,
@@ -128,6 +119,7 @@ fn connect_wifi(wifi: &mut BlockingWifi<EspWifi<'static>>) -> anyhow::Result<()>
 
 pub fn current_time() -> Time {
     let now = Local::now().with_timezone(&Tz::Europe__Helsinki);
+    info!("time {}", now);
     Time {
         hours: now.hour() as usize,
         minutes: now.minute() as usize,
