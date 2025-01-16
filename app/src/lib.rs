@@ -52,8 +52,8 @@ impl FiveMinutesPins<'_> {
 pub struct MinutesPins<'a> {
     pub first: PinDriver<'a, Gpio20, InputOutput>,
     pub second: PinDriver<'a, Gpio21, InputOutput>,
-    pub third: PinDriver<'a, Gpio9, InputOutput>,
-    pub forth: PinDriver<'a, Gpio10, InputOutput>,
+    pub third: PinDriver<'a, Gpio10, InputOutput>,
+    pub forth: PinDriver<'a, Gpio9, InputOutput>,
 }
 
 impl MinutesPins<'_> {
@@ -68,8 +68,8 @@ impl MinutesPins<'_> {
 pub struct HoursPins<'d> {
     pub first: PinDriver<'d, Gpio7, InputOutput>,
     pub second: PinDriver<'d, Gpio8, InputOutput>,
-    pub third: PinDriver<'d, Gpio5, InputOutput>,
-    pub forth: PinDriver<'d, Gpio6, InputOutput>
+    pub third: PinDriver<'d, Gpio6, InputOutput>,
+    pub forth: PinDriver<'d, Gpio5, InputOutput>
 }
 
 impl <'d> HoursPins<'d> {

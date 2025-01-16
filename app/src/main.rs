@@ -20,15 +20,15 @@ fn main() -> anyhow::Result<()> {
     let mut minutes = MinutesPins {
         first: PinDriver::input_output(peripherals.pins.gpio20)?,
         second: PinDriver::input_output(peripherals.pins.gpio21)?,
-        third: PinDriver::input_output(peripherals.pins.gpio9)?,
-        forth: PinDriver::input_output(peripherals.pins.gpio10)?,
+        third: PinDriver::input_output(peripherals.pins.gpio10)?,
+        forth: PinDriver::input_output(peripherals.pins.gpio9)?,
     };
 
     let mut hours = HoursPins {
         first: PinDriver::input_output(peripherals.pins.gpio7)?,
         second: PinDriver::input_output(peripherals.pins.gpio8)?,
-        third: PinDriver::input_output(peripherals.pins.gpio5)?,
-        forth: PinDriver::input_output(peripherals.pins.gpio6)?,
+        third: PinDriver::input_output(peripherals.pins.gpio6)?,
+        forth: PinDriver::input_output(peripherals.pins.gpio5)?,
     };
 
     let mut five_hours = FiveHoursPins {
