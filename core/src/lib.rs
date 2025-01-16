@@ -9,8 +9,8 @@ pub struct Time {
 
 #[derive(PartialEq, Debug)]
 pub struct BerlinClock {
-    five_hours: Vec<LightState>,
-    hours: Vec<LightState>,
+    pub five_hours: Vec<LightState>,
+    pub hours: Vec<LightState>,
     pub five_minutes: Vec<LightState>,
     pub minutes: Vec<LightState>,
     pub seconds: LightState,

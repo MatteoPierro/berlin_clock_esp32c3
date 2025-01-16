@@ -2,7 +2,7 @@ use berlin_clock::{LightState, Time};
 use chrono::{Local, Timelike};
 use chrono_tz::Tz;
 use esp_idf_svc::eventloop::EspSystemEventLoop;
-use esp_idf_svc::hal::gpio::{Gpio0, Gpio1, Gpio10, Gpio2, Gpio3, Gpio4, Gpio5, Gpio6, Gpio7, Gpio8, Gpio9, InputOutput, Pin, PinDriver};
+use esp_idf_svc::hal::gpio::{Gpio0, Gpio1, Gpio10, Gpio11, Gpio12, Gpio2, Gpio20, Gpio21, Gpio3, Gpio4, Gpio5, Gpio6, Gpio7, Gpio8, Gpio9, InputOutput, Pin, PinDriver};
 use esp_idf_svc::hal::modem::Modem;
 use esp_idf_svc::nvs::EspDefaultNvsPartition;
 use esp_idf_svc::sntp;
@@ -50,13 +50,45 @@ impl FiveMinutesPins<'_> {
 }
 
 pub struct MinutesPins<'a> {
-    pub first: PinDriver<'a, Gpio1, InputOutput>,
-    pub second: PinDriver<'a, Gpio2, InputOutput>,
-    pub third: PinDriver<'a, Gpio3, InputOutput>,
-    pub forth: PinDriver<'a, Gpio4, InputOutput>,
+    pub first: PinDriver<'a, Gpio20, InputOutput>,
+    pub second: PinDriver<'a, Gpio21, InputOutput>,
+    pub third: PinDriver<'a, Gpio9, InputOutput>,
+    pub forth: PinDriver<'a, Gpio10, InputOutput>,
 }
 
 impl MinutesPins<'_> {
+    pub fn display(&mut self, minutes_row: Vec<LightState>) {
+        toggle(&mut self.first, minutes_row[0]);
+        toggle(&mut self.second, minutes_row[1]);
+        toggle(&mut self.third, minutes_row[2]);
+        toggle(&mut self.forth, minutes_row[3]);
+    }
+}
+
+pub struct HoursPins<'d> {
+    pub first: PinDriver<'d, Gpio7, InputOutput>,
+    pub second: PinDriver<'d, Gpio8, InputOutput>,
+    pub third: PinDriver<'d, Gpio5, InputOutput>,
+    pub forth: PinDriver<'d, Gpio6, InputOutput>
+}
+
+impl <'d> HoursPins<'d> {
+    pub fn display(&mut self, minutes_row: Vec<LightState>) {
+        toggle(&mut self.first, minutes_row[0]);
+        toggle(&mut self.second, minutes_row[1]);
+        toggle(&mut self.third, minutes_row[2]);
+        toggle(&mut self.forth, minutes_row[3]);
+    }
+}
+
+pub struct FiveHoursPins<'d> {
+    pub first: PinDriver<'d, Gpio4, InputOutput>,
+    pub second: PinDriver<'d, Gpio3, InputOutput>,
+    pub third: PinDriver<'d, Gpio2, InputOutput>,
+    pub forth: PinDriver<'d, Gpio1, InputOutput>
+}
+
+impl<'d> FiveHoursPins<'d> {
     pub fn display(&mut self, minutes_row: Vec<LightState>) {
         toggle(&mut self.first, minutes_row[0]);
         toggle(&mut self.second, minutes_row[1]);
